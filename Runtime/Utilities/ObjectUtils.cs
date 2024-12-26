@@ -202,13 +202,12 @@ namespace Unity.AutoLOD.Utilities
         static IEnumerable<Type> GetAssignableTypes(Type type, Func<Type, bool> predicate = null)
         {
             var list = new List<Type>();
-            ForEachType(t =>
-            {
-                if (type.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && (predicate == null || predicate(t))
+            foreach (var t in TypeCache.GetTypesDerivedFrom(type))
+	    {
+                if (!t.IsInterface && !t.IsAbstract && (predicate == null || predicate(t))
                     && t.GetCustomAttribute<HideInInspector>() == null)
                     list.Add(t);
-            });
-
+	    }
             return list;
         }
 
