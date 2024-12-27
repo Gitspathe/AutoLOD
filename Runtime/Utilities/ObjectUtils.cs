@@ -199,6 +199,8 @@ namespace Unity.AutoLOD.Utilities
             return component;
         }
 
+
+#if UNITY_EDITOR
         static IEnumerable<Type> GetAssignableTypes(Type type, Func<Type, bool> predicate = null)
         {
             var list = new List<Type>();
@@ -210,6 +212,20 @@ namespace Unity.AutoLOD.Utilities
 	    }
             return list;
         }
+#else
+	static IEnumerable<Type> GetAssignableTypes(Type type, Func<Type, bool> predicate = null)
+        {
+            var list = new List<Type>();
+            ForEachType(t =>
+            {
+                if (type.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && (predicate == null || predicate(t))
+                    && t.GetCustomAttribute<HideInInspector>() == null)
+                    list.Add(t);
+            });
+
+            return list;
+        }
+#endif
 
         public static void ForEachAssembly(Action<Assembly> callback)
         {
